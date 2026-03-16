@@ -15,7 +15,7 @@ import { useSiteIdentity } from '@/hooks/useSiteIdentity'
 import { defaultNetwork, networks, projectId, wagmiAdapter, wagmiConfig } from '@/lib/appkit'
 import { authClient } from '@/lib/auth-client'
 import { IS_BROWSER } from '@/lib/constants'
-import { buildTwoFactorRedirectPath, localizePathname, stripLocalePrefix } from '@/lib/locale-path'
+import { buildTwoFactorRedirectPath, stripLocalePrefix } from '@/lib/locale-path'
 import { clearBrowserStorage, clearNonHttpOnlyCookies } from '@/lib/utils'
 import { useUser } from '@/stores/useUser'
 
@@ -51,7 +51,7 @@ function clearSiweTwoFactorIntentCookie() {
   document.cookie = `${SIWE_TWO_FACTOR_INTENT_COOKIE}=; Max-Age=0; Path=/; SameSite=Lax${secure}`
 }
 
-function clearAppKitLocalStorage() {
+function clearAppKitState() {
   if (!IS_BROWSER) {
     return
   }
@@ -178,10 +178,8 @@ function initializeAppKitSingleton(
           }).catch(() => {})
         },
         onSignOut: () => {
-          clearAppKitLocalStorage()
-          if (IS_BROWSER) {
-            window.location.href = localizePathname('/auth/reset', window.location.pathname)
-          }
+          clearAppKitState()
+          window.location.reload()
         },
       }),
     })

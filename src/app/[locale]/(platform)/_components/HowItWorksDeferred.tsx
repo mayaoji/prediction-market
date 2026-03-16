@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
+import { useUser } from '@/stores/useUser'
 
 const HowItWorks = dynamic(
   () => import('@/app/[locale]/(platform)/_components/HowItWorks'),
@@ -9,9 +10,14 @@ const HowItWorks = dynamic(
 )
 
 export default function HowItWorksDeferred() {
+  const user = useUser()
   const [shouldRender, setShouldRender] = useState(false)
 
   useEffect(() => {
+    if (user) {
+      return
+    }
+
     function renderHowItWorks() {
       setShouldRender(true)
     }
@@ -27,9 +33,9 @@ export default function HowItWorksDeferred() {
       window.removeEventListener('pointerdown', renderHowItWorks)
       window.removeEventListener('keydown', renderHowItWorks)
     }
-  }, [])
+  }, [user])
 
-  if (!shouldRender) {
+  if (user || !shouldRender) {
     return null
   }
 
